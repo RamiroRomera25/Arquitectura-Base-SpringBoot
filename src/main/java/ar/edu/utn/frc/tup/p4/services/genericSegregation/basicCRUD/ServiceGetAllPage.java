@@ -1,0 +1,25 @@
+package ar.edu.utn.frc.tup.p4.services.genericSegregation.basicCRUD;
+
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import ar.edu.utn.frc.tup.p4.repositories.GenericRepository;
+
+public interface ServiceGetAllPage<E, I, M> {
+
+    ModelMapper getMapper();
+
+    GenericRepository<E, I> getRepository();
+
+    default Page<M> getAll(Pageable pageable) {
+        Page<E> pageEntity = getRepository().findAll(pageable);
+        if (!pageEntity.isEmpty()) {
+            return getMapper().map(pageEntity, new TypeToken<Page<M>>(){}.getType());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No content retrieved.");
+        }
+    }
+}

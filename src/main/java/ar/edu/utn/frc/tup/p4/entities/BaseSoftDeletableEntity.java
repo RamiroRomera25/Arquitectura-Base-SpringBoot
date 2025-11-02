@@ -12,6 +12,6 @@ import java.io.Serializable;
 @Setter
 public abstract class BaseSoftDeletableEntity<ID extends Number, IDU extends Serializable> extends BaseAuditEntity<ID, IDU> {
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 }

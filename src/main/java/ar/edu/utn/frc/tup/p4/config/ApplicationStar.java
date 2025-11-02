@@ -25,5 +25,3 @@ public class ApplicationStar implements ApplicationListener<ContextRefreshedEven
                 "Link to Swagger: " + appURL + swaggerURL + "\n");
     }
 }
-
-

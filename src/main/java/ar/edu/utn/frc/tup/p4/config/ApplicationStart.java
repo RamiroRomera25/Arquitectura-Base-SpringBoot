@@ -6,7 +6,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationStar implements ApplicationListener<ContextRefreshedEvent> {
+public class ApplicationStart implements ApplicationListener<ContextRefreshedEvent> {
 
     @Value("${app.url}")
     private String appURL;

@@ -2,51 +2,65 @@ package ar.edu.utn.frc.tup.p4.translators;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Registro centralizado de traductores.
+ * Permite obtener instancias concretas de traductores que extienden BaseTranslator.
+ *
+ * Ejemplo:
+ *   StatusTranslator translator = TranslatorFactory.getTranslator(StatusTranslator.class);
+ */
 @Component
 @RequiredArgsConstructor
 public class TranslatorFactory {
 
-    private static final Map<Class<?>, BaseTranslator<?, ?>> entityToTranslator = new ConcurrentHashMap<>();
-    private static final Map<Class<?>, BaseTranslator<?, ?>> dtoToTranslator = new ConcurrentHashMap<>();
+    private static final Map<Class<? extends BaseTranslator<?, ?>>, BaseTranslator<?, ?>> translatorByClass = new ConcurrentHashMap<>();
 
     private final ApplicationContext context;
 
     @PostConstruct
+    @SuppressWarnings("unchecked")
     public void initialize() {
-        // Buscar todos los beans anotados con @Translator
         Map<String, Object> beans = context.getBeansWithAnnotation(Translator.class);
 
         for (Object bean : beans.values()) {
             if (bean instanceof BaseTranslator<?, ?> translator) {
-                Translator annotation = bean.getClass().getAnnotation(Translator.class);
-                entityToTranslator.put(annotation.entity(), translator);
-                dtoToTranslator.put(annotation.dto(), translator);
+                translatorByClass.put((Class<? extends BaseTranslator<?, ?>>) translator.getClass(), translator);
             }
         }
     }
 
+    /**
+     * Obtiene un traductor concreto por su clase.
+     *
+     * @param clazz Clase concreta del traductor (ej. StatusTranslator.class)
+     * @return Instancia del traductor, o lanza excepción si no existe
+     */
     @SuppressWarnings("unchecked")
-    public static <E, D> BaseTranslator<E, D> getByEntity(Class<E> entityClass) {
-        return (BaseTranslator<E, D>) entityToTranslator.get(entityClass);
+    public static <T extends BaseTranslator<?, ?>> T getTranslator(Class<T> clazz) {
+        BaseTranslator<?, ?> translator = translatorByClass.get(clazz);
+        if (translator == null) {
+            throw new IllegalArgumentException("No se encontró traductor registrado para clase: " + clazz.getName());
+        }
+        return (T) translator;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <E, D> BaseTranslator<E, D> getByDto(Class<D> dtoClass) {
-        return (BaseTranslator<E, D>) dtoToTranslator.get(dtoClass);
+    /**
+     * Verifica si hay un traductor registrado para una clase concreta.
+     */
+    public static boolean hasTranslator(Class<? extends BaseTranslator<?, ?>> clazz) {
+        return translatorByClass.containsKey(clazz);
     }
 
-    public static boolean hasEntity(Class<?> entityClass) {
-        return entityToTranslator.containsKey(entityClass);
-    }
-
-    public static boolean hasDto(Class<?> dtoClass) {
-        return dtoToTranslator.containsKey(dtoClass);
+    /**
+     * Devuelve todos los traductores registrados.
+     */
+    public static Map<Class<? extends BaseTranslator<?, ?>>, BaseTranslator<?, ?>> getAll() {
+        return Map.copyOf(translatorByClass);
     }
 }

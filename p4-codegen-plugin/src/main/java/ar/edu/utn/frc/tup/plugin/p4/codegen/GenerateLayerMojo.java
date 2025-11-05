@@ -1,5 +1,5 @@
 
-package ar.edu.utn.frc.tup.p4.codegen;
+package ar.edu.utn.frc.tup.plugin.p4.codegen;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;

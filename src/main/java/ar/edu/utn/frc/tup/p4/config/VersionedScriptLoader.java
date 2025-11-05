@@ -20,6 +20,11 @@ public class VersionedScriptLoader implements CommandLineRunner {
     private final JdbcTemplate jdbcTemplate;
     private final Environment env;
 
+    private static final String DB_VERSION_QUERY = "SELECT sv.version FROM schema_version sV;";
+    private static final String CREATE_SCHEMA_VERSION_QUERY = "CREATE TABLE schema_version (version VARCHAR(20) PRIMARY KEY,executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+    private static final String CREATE_EXECUTED_SCRIPTS_QUERY = "CREATE TABLE executed_scripts (id NUMBER PRIMARY KEY,version VARCHAR(20) NOT NULL,script_name VARCHAR(255) NOT NULL,executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,app_version VARCHAR(20) NOT NULL,success BOOLEAN DEFAULT TRUE,error_message TEXT);"
+    private static final String INSERT_SCHEMA_VERSION_QUERY = "INSERT INTO schema_version (version, executed_at) VALUES ('0.0.0', NOW());";
+
     public VersionedScriptLoader(JdbcTemplate jdbcTemplate, Environment env) {
         this.jdbcTemplate = jdbcTemplate;
         this.env = env;
@@ -34,16 +39,19 @@ public class VersionedScriptLoader implements CommandLineRunner {
             return;
         }
 
+        String dbVersion = getOrCreateDbVersion();
+
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
         Resource[] versionDirs = resolver.getResources("classpath:db/versions/*/");
         List<String> availableVersions = Arrays.stream(versionDirs)
                 .map(Resource::getFilename)
+                .filter(version -> compareVersions(dbVersion, version) <= 0)
                 .sorted()
                 .toList();
 
         for (String version : availableVersions) {
-            if (version.compareTo(appVersion) <= 0) {
+            if (version.compareTo(dbVersion) <= 0) {
                 executePendingScriptsForVersion(version, resolver, appVersion);
             }
         }
@@ -79,4 +87,32 @@ public class VersionedScriptLoader implements CommandLineRunner {
             }
         }
     }
+
+    private String getOrCreateDbVersion() {
+        String dbVersion = null;
+        try {
+            this.jdbcTemplate.queryForObject(DB_VERSION_QUERY, String.class);
+        } catch (Exception ignore) {}
+
+        if (Objects.isNull(dbVersion)) {
+            this.jdbcTemplate.execute(CREATE_SCHEMA_VERSION_QUERY);
+            this.jdbcTemplate.execute(CREATE_EXECUTED_SCRIPTS_QUERY);
+            this.jdbcTemplate.update(INSERT_SCHEMA_VERSION_QUERY);
+            dbVersion = "0.0.0";
+        }
+
+        return dbVersion;
+    }
+
+    private static int compareVersions(String v1, String v2) {
+    String[] p1 = v1.split("\\.");
+    String[] p2 = v2.split("\\.");
+    int length = Math.max(p1.length, p2.length);
+    for (int i = 0; i < length; i++) {
+        int n1 = i < p1.length ? Integer.parseInt(p1[i]) : 0;
+        int n2 = i < p2.length ? Integer.parseInt(p2[i]) : 0;
+        if (n1 != n2) return Integer.compare(n1, n2);
+    }
+    return 0;
+}
 }

@@ -2,6 +2,7 @@ package ar.edu.utn.frc.tup.p4.translators;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class TranslatorFactory {
 
     private static final Map<Class<?>, BaseTranslator<?, ?>> dtoToTranslator = new ConcurrentHashMap<>();
@@ -30,8 +32,11 @@ public class TranslatorFactory {
             if (bean instanceof BaseTranslator<?, ?> translator) {
                 Class<? extends BaseTranslator<?, ?>> clazz = (Class<? extends BaseTranslator<?, ?>>) translator.getClass();
                 Translator annotation = clazz.getAnnotation(Translator.class);
-
-                dtoToTranslator.put(annotation.dto(), translator);
+                if (!dtoToTranslator.containsKey(annotation.dto())) {
+                    dtoToTranslator.put(annotation.dto(), translator);
+                } else {
+                    log.warn("A translator can't be register on dtoToTranslator registry cause is duplicated.");
+                }
                 translatorByClass.put(clazz, translator);
             }
         }

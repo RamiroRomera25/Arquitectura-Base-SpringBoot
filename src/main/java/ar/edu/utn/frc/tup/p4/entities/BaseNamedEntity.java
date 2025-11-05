@@ -11,13 +11,13 @@ import java.io.Serializable;
  * This class is for auxiliar classes.
  *
  * @param <ID>
- * @param <UDI>
+ * @param <IDU>
  */
 @MappedSuperclass
 @Setter
 @Getter
-public abstract class BaseNamedEntity<ID extends Number, UDI extends Serializable>
-        extends BaseSoftDeletableEntity<ID, UDI> {
+public abstract class BaseNamedEntity<ID extends Number, IDU extends Serializable>
+        extends BaseSoftDeletableEntity<ID, IDU> {
 
     @Column(nullable = false, unique = true, length = 150)
     private String name;

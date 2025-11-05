@@ -28,4 +28,11 @@ public interface SoftDeletableRepository<T extends BaseSoftDeletableEntity<ID, ?
      */
     @Query("select e from #{#entityName} e where e.id = :id ")
     Optional<T> findByIdIncludingInactive(@Param("id") ID id);
+
+    default void softDelete(ID id) {
+        findById(id).ifPresent(e -> {
+            e.setActive(false);
+            save(e);
+        });
+    }
 }

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ar.edu.utn.frc.tup.p4.dtos.common.ErrorApi;
+import ar.edu.utn.frc.tup.p4.dtos.exception.ErrorApi;
 
 @RestController
 @RequestMapping("")

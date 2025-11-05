@@ -6,7 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
-import ar.edu.utn.frc.tup.p4.dtos.common.ErrorApi;
+import ar.edu.utn.frc.tup.p4.dtos.exception.ErrorApi;
 
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;

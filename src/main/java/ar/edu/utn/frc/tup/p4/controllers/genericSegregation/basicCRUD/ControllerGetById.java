@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import ar.edu.utn.frc.tup.p4.dtos.common.ErrorApi;
+import ar.edu.utn.frc.tup.p4.dtos.exception.ErrorApi;
 import ar.edu.utn.frc.tup.p4.services.genericSegregation.basicCRUD.ServiceGetById;
 
 /**

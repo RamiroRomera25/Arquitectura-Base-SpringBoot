@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ar.edu.utn.frc.tup.p4.dtos.common.ErrorApi;
+import ar.edu.utn.frc.tup.p4.dtos.exception.ErrorApi;
 import rami.generic.entities.base.BaseEntity;
 import ar.edu.utn.frc.tup.p4.services.genericSegregation.basicCRUD.ServiceSoftDeleteList;
 

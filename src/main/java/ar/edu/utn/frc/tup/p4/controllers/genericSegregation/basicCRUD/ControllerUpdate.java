@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ar.edu.utn.frc.tup.p4.dtos.common.ErrorApi;
+import ar.edu.utn.frc.tup.p4.dtos.exception.ErrorApi;
 import ar.edu.utn.frc.tup.p4.services.genericSegregation.basicCRUD.ServiceUpdate;
 
 /**

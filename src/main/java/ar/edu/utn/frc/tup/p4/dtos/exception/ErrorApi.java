@@ -1,4 +1,4 @@
-package ar.edu.utn.frc.tup.p4.dtos.common;
+package ar.edu.utn.frc.tup.p4.dtos.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

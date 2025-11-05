@@ -11,9 +11,13 @@
 	<groupId>ar.edu.utn.frc.tup.p4</groupId>
 	<artifactId>templateSpring</artifactId>
 	<version>2024.11-1</version>
-	<name>BaseArq</name>
+    <packaging>pom</packaging>
+    <name>BaseArq</name>
 	<description>Arquitectura Base para Proyectos</description>
-	<properties>
+    <modules>
+        <module>p4-codegen-plugin</module>
+    </modules>
+    <properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2023.0.3</spring-cloud.version>
 	</properties>
@@ -101,6 +105,14 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>ar.edu.utn.frc.tup.p4</groupId>
+				<artifactId>p4-codegen-plugin</artifactId>
+				<version>0.2.0</version>
+				<configuration>
+					<basePackage>ar.edu.utn.frc.tup.p4</basePackage>
 				</configuration>
 			</plugin>
 		</plugins>

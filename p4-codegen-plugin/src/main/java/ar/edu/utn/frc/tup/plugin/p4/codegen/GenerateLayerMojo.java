@@ -144,7 +144,8 @@ public class GenerateLayerMojo extends AbstractMojo {
     private static String dtoTemplate(String pkg, String dto, String dtoExt) {
         return ""
             + "package " + pkg + ".dtos;\n\n"
-            + "import lombok.*;\n\n"
+            + "import lombok.*;\n"
+            + "import ar.edu.utn.frc.tup.p4.dtos.common." + dtoExt + ";\n\n"
             + "@Getter\n@Setter\n@NoArgsConstructor\n@AllArgsConstructor\n"
             + "public class " + dto + " extends " + dtoExt + " {\n"
             + "    // TODO: add fields\n"
@@ -157,7 +158,7 @@ public class GenerateLayerMojo extends AbstractMojo {
             + "import org.springframework.stereotype.Repository;\n"
             + "import " + pkg + ".entities." + entity + ";\n\n"
             + "@Repository\n"
-            + "public interface " + repo + " extends " + repoExt + "<" + entity + "> {\n"
+            + "public interface " + repo + " extends " + repoExt + "<" + entity + ", Long> {\n"
             + "}\n";
     }
 
@@ -176,6 +177,7 @@ public class GenerateLayerMojo extends AbstractMojo {
         return ""
             + "package " + pkg + ".controllers;\n\n"
             + "import org.springframework.web.bind.annotation.*;\n"
+            + "import ar.edu.utn.frc.tup.p4.service." + service + ";\n"
             + "import lombok.RequiredArgsConstructor;\n\n"
             + "@RestController\n"
             + "@RequestMapping(\"" + basePath + "\")\n"
@@ -191,10 +193,18 @@ public class GenerateLayerMojo extends AbstractMojo {
             + "package " + pkg + ".translators;\n\n"
             + "import " + pkg + ".entities." + entity + ";\n"
             + "import " + pkg + ".dtos." + dto + ";\n\n"
-            + "@Translator\n"
+            + "@Translator(oid = " + dto + ".class)\n"
             + "public class " + translator + " extends BaseTranslator<" + entity + ", " + dto + "> {\n"
-            + "    @Override public " + dto + " toDTO(" + entity + " entity){ return new " + dto + "(); }\n"
-            + "    @Override public " + entity + " toEntity(" + dto + " dto){ return new " + entity + "(); }\n"
+            + "\n"
+            + "    // TODO: Completar la logica de los metodos.\n"
+            + "\n"
+            + "    public PersonDTO toDto(Person entity) {\n"
+            + "        return null;\n"
+            + "    }\n"
+            + "\n"
+            + "    public Person toEntity(PersonDTO dto) {\n"
+            + "        return null;\n"
+            + "    }\n"
             + "}\n";
     }
 

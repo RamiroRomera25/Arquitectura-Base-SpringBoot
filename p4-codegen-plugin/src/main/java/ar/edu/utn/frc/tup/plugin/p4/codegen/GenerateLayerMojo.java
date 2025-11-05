@@ -134,8 +134,8 @@ public class GenerateLayerMojo extends AbstractMojo {
             + "import jakarta.persistence.*;\n"
             + "import lombok.*;\n\n"
             + "@Entity\n"
-            + "@Table(name = \"" + "+ entity.toLowerCase() +" + "\")\n"
-            + "@Getter @Setter @NoArgsConstructor @AllArgsConstructor\n"
+            + "@Table(name = \"" + entity.toLowerCase() + "\")\n"
+            + "@Getter\n@Setter\n@NoArgsConstructor\n@AllArgsConstructor\n@Builder\n"
             + "public class " + entity + " extends " + entityExt + " {\n"
             + "    // TODO: add fields\n"
             + "}\n";
@@ -167,7 +167,7 @@ public class GenerateLayerMojo extends AbstractMojo {
             + "import org.springframework.stereotype.Service;\n"
             + "import " + pkg + ".entities." + entity + ";\n\n"
             + "@Service\n"
-            + "public class " + service + " extends GenericService<" + entity + ", Long> {\n"
+            + "public class " + service + " {\n"
             + "}\n";
     }
 

@@ -22,7 +22,7 @@ public class VersionedScriptLoader implements CommandLineRunner {
 
     private static final String DB_VERSION_QUERY = "SELECT sv.version FROM schema_version sV;";
     private static final String CREATE_SCHEMA_VERSION_QUERY = "CREATE TABLE schema_version (version VARCHAR(20) PRIMARY KEY,executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
-    private static final String CREATE_EXECUTED_SCRIPTS_QUERY = "CREATE TABLE executed_scripts (id NUMBER PRIMARY KEY,version VARCHAR(20) NOT NULL,script_name VARCHAR(255) NOT NULL,executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,app_version VARCHAR(20) NOT NULL,success BOOLEAN DEFAULT TRUE,error_message TEXT);"
+    private static final String CREATE_EXECUTED_SCRIPTS_QUERY = "CREATE TABLE executed_scripts (id NUMBER PRIMARY KEY,version VARCHAR(20) NOT NULL,script_name VARCHAR(255) NOT NULL,executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,app_version VARCHAR(20) NOT NULL,success BOOLEAN DEFAULT TRUE,error_message TEXT);";
     private static final String INSERT_SCHEMA_VERSION_QUERY = "INSERT INTO schema_version (version, executed_at) VALUES ('0.0.0', NOW());";
 
     public VersionedScriptLoader(JdbcTemplate jdbcTemplate, Environment env) {

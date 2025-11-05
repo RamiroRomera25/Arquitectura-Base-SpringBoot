@@ -1,0 +1,86 @@
+@startuml
+title Arquitectura Base - UTN FRC TUP P4
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam ArrowColor #0066cc
+skinparam ArrowThickness 1.5
+
+package "DTO Layer" {
+  class BaseDTO {
+    +ID id
+  }
+  class BaseAuditDTO {
+    +LocalDateTime createdAt
+    +LocalDateTime updatedAt
+    +IDU createdBy
+    +IDU updatedBy
+  }
+  BaseAuditDTO -up-|> BaseDTO
+}
+
+package "Translator Layer" {
+  class BaseTranslator<E, D> {
+    +D toDto(E entity)
+    +E toEntity(D dto)
+    +List<D> toDtoList(List<E>)
+    +List<E> toEntityList(List<D>)
+  }
+}
+
+package "Entity Layer" {
+  class BaseIdEntity {
+    +ID getOid()
+    +void setOid(ID)
+  }
+  class BaseVersionedEntity {
+    +Long version
+  }
+  class BaseAuditEntity {
+    +IDU createdBy
+    +LocalDateTime createdAt
+    +IDU updatedBy
+    +LocalDateTime updatedAt
+  }
+  class BaseSoftDeletableEntity {
+    +boolean deleted
+  }
+  class BaseNamedEntity {
+    +String name
+  }
+
+  BaseVersionedEntity -up-|> BaseIdEntity
+  BaseAuditEntity -up-|> BaseVersionedEntity
+  BaseSoftDeletableEntity -up-|> BaseAuditEntity
+  BaseNamedEntity -up-|> BaseSoftDeletableEntity
+}
+
+package "Repository Layer" {
+  interface BaseRepository
+  interface SoftDeletableRepository
+  interface NamedEntityRepository {
+    +Optional<T> findByName(String name)
+  }
+
+  SoftDeletableRepository -up-|> BaseRepository
+  NamedEntityRepository -up-|> SoftDeletableRepository
+}
+
+package "Infrastructure Layer" {
+  class VersionedScriptLoader {
+    +run(String... args)
+    -executePendingScriptsForVersion()
+  }
+}
+
+' Relaciones entre capas
+BaseTranslator --> BaseDTO : usa
+BaseTranslator --> BaseIdEntity : usa
+
+NamedEntityRepository --> BaseNamedEntity
+SoftDeletableRepository --> BaseSoftDeletableEntity
+VersionedScriptLoader ..> "db/versions/*" : ejecuta SQL
+
+BaseAuditDTO --> BaseAuditEntity : refleja estructura
+@enduml

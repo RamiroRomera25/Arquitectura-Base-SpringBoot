@@ -4,7 +4,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import ar.edu.utn.frc.tup.p4.entities.interfaces.BaseIdEntity;
+import jakarta.persistence.MappedSuperclass;
 
+@MappedSuperclass
 public class BaseEntity<ID extends Number> implements BaseIdEntity<ID> {
 
     @Id

@@ -173,7 +173,7 @@ public class GenerateLayerMojo extends AbstractMojo {
     }
 
     private static String controllerTemplate(String pkg, String entity, String service, String controller) {
-        String basePath = "/api/" + "+ entity.toLowerCase() +" + "s";
+        String basePath = "/api/" + entity.toLowerCase() + "s";
         return ""
             + "package " + pkg + ".controllers;\n\n"
             + "import org.springframework.web.bind.annotation.*;\n"

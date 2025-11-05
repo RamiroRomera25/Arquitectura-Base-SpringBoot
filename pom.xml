@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>ar.edu.utn.frc.tup.p4</groupId>
-	<artifactId>templateSpring</artifactId>
+	<artifactId>core-tup</artifactId>
 	<version>2024.11-1</version>
     <packaging>pom</packaging>
     <name>BaseArq</name>

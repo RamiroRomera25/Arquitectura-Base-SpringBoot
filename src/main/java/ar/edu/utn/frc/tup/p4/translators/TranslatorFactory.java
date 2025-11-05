@@ -10,15 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registro centralizado de traductores.
- * Permite obtener instancias concretas de traductores que extienden BaseTranslator.
- *
- * Ejemplo:
- *   StatusTranslator translator = TranslatorFactory.getTranslator(StatusTranslator.class);
+ * Permite obtener traductores por clase concreta o por tipo de DTO manejado.
  */
 @Component
 @RequiredArgsConstructor
 public class TranslatorFactory {
 
+    private static final Map<Class<?>, BaseTranslator<?, ?>> dtoToTranslator = new ConcurrentHashMap<>();
     private static final Map<Class<? extends BaseTranslator<?, ?>>, BaseTranslator<?, ?>> translatorByClass = new ConcurrentHashMap<>();
 
     private final ApplicationContext context;
@@ -30,19 +28,32 @@ public class TranslatorFactory {
 
         for (Object bean : beans.values()) {
             if (bean instanceof BaseTranslator<?, ?> translator) {
-                translatorByClass.put((Class<? extends BaseTranslator<?, ?>>) translator.getClass(), translator);
+                Class<? extends BaseTranslator<?, ?>> clazz = (Class<? extends BaseTranslator<?, ?>>) translator.getClass();
+                Translator annotation = clazz.getAnnotation(Translator.class);
+
+                dtoToTranslator.put(annotation.dto(), translator);
+                translatorByClass.put(clazz, translator);
             }
         }
     }
 
     /**
-     * Obtiene un traductor concreto por su clase.
-     *
-     * @param clazz Clase concreta del traductor (ej. StatusTranslator.class)
-     * @return Instancia del traductor, o lanza excepción si no existe
+     * Obtiene un traductor por su clase de DTO.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends BaseTranslator<?, ?>> T getTranslator(Class<T> clazz) {
+    public static <E, D> BaseTranslator<E, D> getTranslator(Class<D> dtoClass) {
+        BaseTranslator<?, ?> translator = dtoToTranslator.get(dtoClass);
+        if (translator == null) {
+            throw new IllegalArgumentException("No se encontró traductor para DTO: " + dtoClass.getName());
+        }
+        return (BaseTranslator<E, D>) translator;
+    }
+
+    /**
+     * Obtiene un traductor concreto por su clase.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends BaseTranslator<?, ?>> T getTranslatorClass(Class<T> clazz) {
         BaseTranslator<?, ?> translator = translatorByClass.get(clazz);
         if (translator == null) {
             throw new IllegalArgumentException("No se encontró traductor registrado para clase: " + clazz.getName());
@@ -51,16 +62,16 @@ public class TranslatorFactory {
     }
 
     /**
-     * Verifica si hay un traductor registrado para una clase concreta.
+     * Verifica si existe traductor para un DTO.
      */
-    public static boolean hasTranslator(Class<? extends BaseTranslator<?, ?>> clazz) {
-        return translatorByClass.containsKey(clazz);
+    public static boolean hasTranslator(Class<?> dtoClass) {
+        return dtoToTranslator.containsKey(dtoClass);
     }
 
     /**
-     * Devuelve todos los traductores registrados.
+     * Verifica si existe un traductor concreto registrado.
      */
-    public static Map<Class<? extends BaseTranslator<?, ?>>, BaseTranslator<?, ?>> getAll() {
-        return Map.copyOf(translatorByClass);
+    public static boolean hasTranslatorClass(Class<? extends BaseTranslator<?, ?>> clazz) {
+        return translatorByClass.containsKey(clazz);
     }
 }
